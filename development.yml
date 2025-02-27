@@ -1,0 +1,90 @@
+version: '3'
+
+volumes:
+  development_postgres_data: {}
+  development_postgres_data_backups: {}
+  development_camerator_media: {}
+
+services:
+  camerator_dev: &camerator
+    build:
+      context: .
+      dockerfile: compose/development/camerator/Dockerfile
+
+    image: camerator_server_development_camerator:${DEV_VERSION:-dev}
+    container_name: camerator_dev
+    volumes:
+      - development_camerator_media:/app/camerator_server/media
+    ports:
+      - "8001:8001"
+    networks:
+      camerator_network:
+        aliases:
+          - camerator
+    depends_on:
+      - postgres_dev
+      - redis_dev
+    env_file:
+      - ./.envs/.development/.camerator
+      - ./.envs/.development/.postgres
+    command: /start
+
+  postgres_dev:
+    build:
+      context: .
+      dockerfile: ./compose/development/postgres/Dockerfile
+    image: camerator_server_development_postgres
+    container_name: postgres_dev
+    volumes:
+      - development_postgres_data:/var/lib/postgresql/data
+      - development_postgres_data_backups:/backups
+    networks:
+      camerator_network:
+    env_file:
+      - ./.envs/.development/.postgres
+
+  redis_dev:
+    image: redis:6
+    container_name: redis_dev
+    networks:
+      camerator_network:
+
+  worker_dev:
+    build:
+      context: .
+      dockerfile: compose/development/camerator/Dockerfile
+    image: camerator_server_development_worker
+    container_name: worker_dev
+    volumes:
+      - development_camerator_media:/app/camerator_server/media
+    depends_on:
+      - postgres_dev
+      - redis_dev
+    env_file:
+      - ./.envs/.development/.camerator
+      - ./.envs/.development/.postgres
+    networks:
+      camerator_network:
+    command: /start-celery-worker
+
+  beat_dev:
+    build:
+      context: .
+      dockerfile: compose/development/camerator/Dockerfile
+    image: camerator_server_development_beat
+    container_name: beat_dev
+    volumes:
+      - development_camerator_media:/app/camerator_server/media
+    depends_on:
+      - postgres_dev
+      - redis_dev
+    env_file:
+      - ./.envs/.development/.camerator
+      - ./.envs/.development/.postgres
+
+    networks:
+      camerator_network:
+    command: /start-celery-beat
+
+networks:
+  camerator_network:

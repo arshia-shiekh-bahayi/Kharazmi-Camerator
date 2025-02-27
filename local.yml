@@ -1,0 +1,60 @@
+version: '3'
+
+volumes:
+  camerator_server_local_postgres_data: {}
+
+services:
+  camerator: &camerator
+    build:
+      context: .
+      dockerfile: compose/local/camerator/Dockerfile
+    image: camerator_server
+    container_name: camerator_server
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app:z
+    env_file:
+      - ./.envs/.local/.camerator
+      - ./.envs/.local/.postgres
+    ports:
+      - '8000:8000'
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: camerator_server_postgres
+    container_name: camerator_server_postgres
+    volumes:
+      - camerator_server_local_postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.envs/.local/.postgres
+    ports:
+     - '5432:5432'
+
+  redis:
+    image: redis:6
+    container_name: camerator_server_redis
+
+  worker:
+    <<: *camerator
+    image: camerator_server_worker
+    container_name: camerator_server_worker
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celery-worker
+
+  beat:
+    <<: *camerator
+    image: camerator_server_beat
+    container_name: camerator_server_beat
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: /start-celery-beat

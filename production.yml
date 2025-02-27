@@ -1,0 +1,75 @@
+version: '3'
+
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  production_camerator_media: {}
+
+services:
+  camerator_prod: &camerator
+    build:
+      context: .
+      dockerfile: compose/production/camerator/Dockerfile
+
+    image: camerator_server_production
+    container_name: camerator_prod
+    ports:
+      - "5000:5000"
+    volumes:
+      - production_camerator_media:/app/camerator/media
+      - ./camerator/staticfiles:/app/camerator/staticfiles
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.camerator
+      - ./.envs/.production/.postgres
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: camerator_server_production_postgres
+    container_name: postgres_prod
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.production/.postgres
+
+  redis:
+    image: redis:6
+    container_name: redis_prod
+
+  worker:
+    build:
+      context: .
+      dockerfile: compose/production/camerator/Dockerfile
+    container_name: worker_prod
+    volumes:
+      - production_camerator_media:/app/camerator/media
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.camerator
+      - ./.envs/.production/.postgres
+    image: camerator_server_production_worker
+    command: /start-celery-worker
+
+  beat:
+    build:
+      context: .
+      dockerfile: compose/production/camerator/Dockerfile
+    container_name: beat_prod
+    volumes:
+      - production_camerator_media:/app/camerator_server/src/media
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.camerator
+      - ./.envs/.production/.postgres
+    image: camerator_server_production_beat
+    command: /start-celery-beat

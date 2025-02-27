@@ -1,0 +1,5 @@
+[flake8]
+exclude = docs, migrations, apps.py
+max-line-length = 120
+inline-quotes = double
+extend-ignore = S101

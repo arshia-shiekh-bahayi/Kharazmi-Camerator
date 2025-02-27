@@ -1,0 +1,14 @@
+{% load static %}
+
+<nav>
+    <div class="comment-reply-form" style="padding: 20px;">
+        <form action="{% url 'blog:comment-reply-form-view' pk=comment.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="body">Message *</label>
+                <input class="form-control" id="body" name="body" rows="3" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Reply</button>
+        </form>
+    </div>
+</nav>

@@ -1,0 +1,14 @@
+h1,
+div,
+input,
+textarea,
+button,
+#logout-form button,
+p,
+.form-row p {
+  font-family: 'farhangsharp', Tahoma, sans-serif;
+}
+
+.form-row input {
+  width: 100px;
+}

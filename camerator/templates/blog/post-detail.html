@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% if messages %}
+<ul class="messages">
+	{% for message in messages %}
+	<li {% if message.tags %} class="message {{ message.tags }}" {% endif %}>
+		{{ message }}
+		<span class="close-message">&times;</span>
+	</li>
+	{% endfor %}
+</ul>
+{% endif %}
+<section class="ftco-section ftco-no-pt ftco-no-pb">
+	<div class="container px-md-0">
+		<div class="row d-flex no-gutters">
+			<div class="col-lg-12 pb-5 single">
+				<div class="row">
+					<div class="img img-single w-100" style="background-image: url({{post.image.url}});"></div>
+					<div class="px-5 mt-4">
+						<h1 class="mb-3">{{post.title}}</h1>
+						<p>{{post.caption}}</p>
+						<div class="tag-widget post-tag-container mb-5 mt-5">
+							<div class="tagcloud">
+								{% for cat in post.category.all %}
+								<a href="#" data-category-id="{{cat.id}}" class="tag-cloud-link">{{cat.title}}</a>
+								{% endfor %}
+							</div>
+						</div>
+
+						<div class="about-author d-flex p-4">
+							<div class="bio mr-5">
+								<img src="{{post.author.image.url}}" alt="Image placeholder" class="img-fluid mb-4">
+							</div>
+							<div class="desc">
+								<h3>{{post.author.first_name}} {{post.author.last_name}}</h3>
+								<p>{{post.author.description}}</p>
+							</div>
+						</div>
+						<div class="pt-5 mt-5">
+							<h3 class="mb-5 font-weight-bold">6 Comments</h3>
+							<ul class="comment-list">
+								{% for comment in comments %}
+								<li class="comment">
+									<div class="vcard bio">
+										<img src="{% static 'images/person_1.jpg' %}" alt="Image placeholder">
+									</div>
+									<div class="comment-body">
+										<h3>{{comment.name}}</h3>
+										<div class="meta">{{comment.created_date}}</div>
+										<p>{{comment.body}}</p>
+									</div>
+								</li>
+								{% for reply in comment.replies.all %}
+								<div class="comment-reply">
+									<div class="comment-body">
+										<p style="color: white;">-- {{reply.body}} --</p>
+									</div>
+								</div>
+								{% endfor %}
+
+								{% include "blog/comment-reply-form.html" %}
+
+								{% endfor %}
+							</ul>
+							<!-- END comment-list -->
+
+
+							{% include "blog/comment-form.html" %}
+						</div>
+					</div>
+				</div><!-- END-->
+			</div>
+		</div>
+	</div>
+</section>
+
+{% block extra_js %}
+<script>
+	$(document).ready(function () {
+		let current_url_params = new URLSearchParams(window.location.search)
+		$("#search-query-filter").val(current_url_params.get("q") || "")
+		$("#category-id-filter").val(current_url_params.get("category_id") || "")
+
+		$(".tag-cloud-link").click(function (e) {
+			e.preventDefault();
+			let category_id = $(this).data("category-id");
+			let current_url = new URL(window.location.href);
+			current_url.searchParams.set("category", category_id);
+			window.location.href = `{% url 'blog:list-view'%}?category=${category_id}`;
+		});
+	});
+</script>
+
+<style>
+	.messages {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 9999;
+	}
+
+	.message {
+		padding: 10px 20px;
+		margin-bottom: 10px;
+		background-color: #f8f9fa;
+		border-radius: 5px;
+		opacity: 1;
+		transition: opacity 1s ease-in-out;
+	}
+
+	.message.success {
+		background-color: #d4edda;
+		border: 1px solid #c3e6cb;
+		color: #155724;
+	}
+
+	.message.error {
+		background-color: #f8d7da;
+		border: 1px solid #e3c9cc;
+		color: #721c24;
+	}
+
+	.close-message {
+		float: right;
+		font-size: 20px;
+		font-weight: bold;
+		line-height: 1;
+		color: #000;
+		text-shadow: 0 1px 0 #fff;
+		opacity: 0.5;
+		cursor: pointer;
+	}
+
+	.close-message:hover {
+		opacity: 0.8;
+	}
+
+	@keyframes fadeOut {
+		0% {
+			opacity: 1;
+		}
+
+		100% {
+			opacity: 0;
+		}
+	}
+
+	.message.fade-out {
+		animation: fadeOut 1s ease-in-out forwards;
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const closeMessages = document.querySelectorAll(".close-message");
+		closeMessages.forEach(function (closeMessage) {
+			closeMessage.addEventListener("click", function () {
+				const message = closeMessage.closest(".message");
+				message.classList.add("fade-out");
+				setTimeout(function () {
+					message.remove();
+				}, 1000);
+			});
+		});
+
+		setTimeout(function () {
+			const messages = document.querySelectorAll(".message");
+			messages.forEach(function (message) {
+				message.classList.add("fade-out");
+				setTimeout(function () {
+					message.remove();
+				}, 1000);
+			});
+		}, 10000);
+	});
+</script>
+{% endblock extra_js %}
+
+{% endblock content %}

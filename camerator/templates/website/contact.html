@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% if messages %}
+<ul class="messages">
+	{% for message in messages %}
+	<li {% if message.tags %} class="message {{ message.tags }}" {% endif %}>
+		{{ message }}
+		<span class="close-message">&times;</span>
+	</li>
+	{% endfor %}
+</ul>
+{% endif %}
+<section class="ftco-section ftco-no-pt ftco-no-pb">
+	<div class="container px-md-0">
+		<div class="row d-flex no-gutters">
+			{% include "website/contact-form.html" %}
+			<div class="col-lg-4 col-md-5 d-flex align-items-stretch">
+				<div class="info-wrap js-fullheight bg-primary w-100 p-md-5 p-4">
+					<h3>Let's get in touch</h3>
+					<p class="mb-4">We're open for any suggestion or just to have a chat</p>
+					<div class="dbox w-100 d-flex align-items-start">
+						<div class="icon d-flex align-items-center justify-content-center">
+							<span class="fa fa-map-marker"></span>
+						</div>
+						<div class="text pl-3">
+							<p><span>Address:</span> Rezvan 13th Street, Kerman Iran</p>
+						</div>
+					</div>
+					<div class="dbox w-100 d-flex align-items-center">
+						<div class="icon d-flex align-items-center justify-content-center">
+							<span class="fa fa-phone"></span>
+						</div>
+						<div class="text pl-3">
+							<p><span>Phone:</span> <a href="tel://1234567920">+ 98 939 373 1284</a></p>
+						</div>
+					</div>
+					<div class="dbox w-100 d-flex align-items-center">
+						<div class="icon d-flex align-items-center justify-content-center">
+							<span class="fa fa-paper-plane"></span>
+						</div>
+						<div class="text pl-3">
+							<p><span>Email:</span> <a href="mailto:info@yoursite.com">arshiasheikhbahayi@ygmail.com</a>
+							</p>
+						</div>
+					</div>
+					<div class="dbox w-100 d-flex align-items-center">
+						<div class="icon d-flex align-items-center justify-content-center">
+							<span class="fa fa-globe"></span>
+						</div>
+						<div class="text pl-3">
+							<p><span>Website</span> <a href="#">Camerator</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="map row d-flex no-gutters">
+			<div id="map"></div>
+		</div>
+	</div>
+</section>
+{% block extra_js %}
+<script type="text/javascript">
+	let center = [56.967999, 30.283937]
+	const map = tt.map({
+		key: "X9VqCRIgulmGAgPh2AiKnANfzPIVjYS9",
+		container: "map",
+		center: center,
+		zoom: 10
+	})
+	map.on('load', () => {
+		new tt.Marker().setLngLat(center).addTo(map)
+	})
+</script>
+
+<style>
+	.messages {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 9999;
+	}
+
+	.message {
+		padding: 10px 20px;
+		margin-bottom: 10px;
+		background-color: #f8f9fa;
+		border-radius: 5px;
+		opacity: 1;
+		transition: opacity 1s ease-in-out;
+	}
+
+	.message.success {
+		background-color: #d4edda;
+		border: 1px solid #c3e6cb;
+		color: #155724;
+	}
+
+	.message.error {
+		background-color: #f8d7da;
+		border: 1px solid #e3c9cc;
+		color: #721c24;
+	}
+
+	.close-message {
+		float: right;
+		font-size: 20px;
+		font-weight: bold;
+		line-height: 1;
+		color: #000;
+		text-shadow: 0 1px 0 #fff;
+		opacity: 0.5;
+		cursor: pointer;
+	}
+
+	.close-message:hover {
+		opacity: 0.8;
+	}
+
+	@keyframes fadeOut {
+		0% {
+			opacity: 1;
+		}
+
+		100% {
+			opacity: 0;
+		}
+	}
+
+	.message.fade-out {
+		animation: fadeOut 1s ease-in-out forwards;
+	}
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const closeMessages = document.querySelectorAll(".close-message");
+		closeMessages.forEach(function (closeMessage) {
+			closeMessage.addEventListener("click", function () {
+				const message = closeMessage.closest(".message");
+				message.classList.add("fade-out");
+				setTimeout(function () {
+					message.remove();
+				}, 1000);
+			});
+		});
+
+		setTimeout(function () {
+			const messages = document.querySelectorAll(".message");
+			messages.forEach(function (message) {
+				message.classList.add("fade-out");
+				setTimeout(function () {
+					message.remove();
+				}, 1000);
+			});
+		}, 10000);
+	});
+</script>
+{% endblock extra_js %}
+
+{% endblock content %}

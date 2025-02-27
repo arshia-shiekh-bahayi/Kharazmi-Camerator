@@ -1,0 +1,20 @@
+[
+  {
+    "model": "user.user",
+    "pk": "1080ed42-c89c-4f36-b94d-4bb0a84cbf21",
+    "fields": {
+      "password": "argon2$argon2id$v=19$m=102400,t=2,p=8$ZHZNMXVNcEVyelZ2ZmN4WWZpY1dCZw$0wz+ka2XTYiZh02HriidBNWEFxghi634mchlfhCw7rY",
+      "last_login": "2023-05-28T16:14:15.865+0000",
+      "first_name": "Super",
+      "last_name": "Admin",
+      "email": "local@admin.com",
+      "is_staff": true,
+      "is_active": true,
+      "is_superuser": true,
+      "date_joined": "2022-03-03T18:06:08.158+0000",
+      "username": "09123456789",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

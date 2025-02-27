@@ -1,0 +1,19 @@
+[run]
+source = .
+branch = True
+concurrency = multiprocessing
+omit =
+    manage.py
+    config/asgi.py
+    config/wsgi.py
+    config/settings/*
+    */migrations/*
+    *test*
+    *admin.py
+    *admin_views.py
+    *apps.py
+    services/payment/pec_payment/pec_wrapper.py
+
+[report]
+show_missing = True
+skip_covered = True

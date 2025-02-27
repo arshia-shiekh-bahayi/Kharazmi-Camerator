@@ -1,0 +1,10 @@
+{% extends 'admin/base_site.html' %} {% load static i18n %} {% block branding %}
+<h1 id="site-name">{% trans 'Camerator Website Management' %}</h1>
+{% endblock %} {% block extrastyle %} {{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/fonts/farhang/importer.css' %}" />
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{% static 'admin/override.css' %}"
+/>
+{% endblock %} {% block nav-global %}{% endblock %}

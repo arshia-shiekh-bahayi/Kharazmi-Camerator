@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="ftco-section ftco-no-pt ftco-no-pb">
+	<div class="container px-md-0">
+		<div class="row d-flex no-gutters">
+			{% for service in services %}
+			<div class="col-md-3 pricing">
+				<div class="row no-gutters align-items-center">
+					<div href="#" class="img w-100 js-fullheight d-flex align-items-center" style="background-image: url({{service.thumbnail.url}});">
+						<div class="text p-4 ftco-animate">
+							<h3>{{service.title}}</h3>
+							<ul>
+								<li><span>Photos</span>Package of {{service.number_of_photos}}</li>
+								<li><span>Processing</span>{{service.processing}}</li>
+								<li><span>Type of Camera</span>{{service.camera}}</li>
+								<li><span>Resolution</span>{{service.resolution}}</li>
+								<li><span>Term</span>{{service.term}} Days</li>
+							</ul>
+							<span class="price">${{service.price}}</span>
+							<p><a href="#" class="btn-custom">Add to Cart</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</section>
+{% endblock content %}

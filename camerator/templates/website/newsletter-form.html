@@ -1,0 +1,12 @@
+{% load static %}
+
+<div class="mb-4">
+    <h3>Subscribe for newsletter</h3>
+    <form action="{% url 'website:newsletter-form-view' %}" method="post" class="colorlib-subscribe-form">
+        {% csrf_token %}
+        <div class="form-group d-flex">
+            <div class="icon"><span class="icon-paper-plane"></span></div>
+            <input name="email" type="text" class="form-control" placeholder="Enter Email Address">
+        </div>
+    </form>
+</div>

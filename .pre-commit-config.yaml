@@ -1,0 +1,74 @@
+exclude: '^docs/|/migrations/'
+default_stages: [commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: check-merge-conflict
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: detect-private-key
+
+
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: '1.22.1'
+    hooks:
+      - id: django-upgrade
+        args: ['--target-version', '5.1']
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.4.0
+    hooks:
+      - id: pyupgrade
+        args: [--py311-plus]
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+
+  - repo: local
+    hooks:
+      - id: check-migrations
+        name: check-migrations
+        description: Dry run django makemigrations command to check migration issues
+        stages: [push]
+        entry: sh -c "docker-compose -f local.yml -p camerator-server exec -T camerator ./manage.py makemigrations --dry-run --check"
+        language: system
+        require_serial: true
+      - id: mypy
+        name: mypy
+        stages: [push]
+        language: python
+        additional_dependencies:
+          - django-stubs
+          - djangorestframework-stubs
+          - types-requests
+        entry: sh -c "docker-compose -f local.yml -p camerator-server exec -w /app/camerator -T camerator mypy --explicit-package-bases . --config-file=mypy.ini"
+      - id: run-tests
+        name: tests
+        description: Run django tests with docker
+        stages: [push]
+        entry: sh -c "docker-compose -f local.yml -p camerator-server exec -w /app/camerator -T camerator ./manage.py test --noinput"
+        language: system
+        require_serial: true
+
+# sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
+ci:
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
